@@ -3128,19 +3128,20 @@ if simple_luna_data_availability:
 
 if __name__ == '__main__':
     
+	# I've chosen option 1 for Part 1, so I don't need any of these things below here...
     
     # Part 1, Option 3 step    
-    dim = 8
-    recreate_grid8_March_data = True
+    # dim = 8
+    # recreate_grid8_March_data = True
     
     # Part 1, Option 2: To recreate data for that option uncomment the next line ...
     #recreate_grid8_March_data = False # switch to obtain intermediary data for Part 1, Option 2 
     
-    print ("Starting:  create_unet_training_files, recreating grid8 data: ", recreate_grid8_March_data)
-    start_time = time.time()
+    # print ("Starting:  create_unet_training_files, recreating grid8 data: ", recreate_grid8_March_data)
+    # start_time = time.time()
     
-    create_unet_training_files(dim, recreate_grid8_March_data)
-    print ("Completed, create_unet_training_files, time: ", time.time()-start_time)
+    # create_unet_training_files(dim, recreate_grid8_March_data)
+    # print ("Completed, create_unet_training_files, time: ", time.time()-start_time)
 
 
     # PART 2 - prepare competitions data, for stage 1 and stage 2  
