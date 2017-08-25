@@ -1,0 +1,19 @@
+# my go to git commands (make sure no local changes haven't been committed)
+git fetch origin
+git reset --hard origin/master
+
+# create conda environment
+# c2c (project) 8 (8th place algo) 35 (python version 3.5)
+conda create --name=c2c_8_35 python=3.5
+
+# install dependencies for Andre section
+source activate c2c_8_35
+conda install numpy
+conda install pandas
+conda install scikit-learn
+conda install scikit-image
+python -m pip install dicom           # not in conda 
+python -m pip install opencv-python   # weird ways to get this from conda
+conda install -c simpleitk simpleitk 
+
+
