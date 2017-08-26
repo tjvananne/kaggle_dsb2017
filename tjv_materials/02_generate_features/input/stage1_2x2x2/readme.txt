@@ -1,0 +1,1 @@
+I just created these directories manually along with the 2x2x2 directory as well
