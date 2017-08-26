@@ -1,0 +1,4 @@
+
+
+# ignore dicom files
+*.dcm
