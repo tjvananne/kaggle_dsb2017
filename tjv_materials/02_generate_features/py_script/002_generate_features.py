@@ -445,7 +445,8 @@ def calc_features_keras_3dx(stage, dim, run, processors, model_weights_name):
         start_file = 0 #2        # was 508 for a restart
         last_file = len(files)  #
 
-    path = files[2]  # 4 is a cancer, 2 is not but may have a lots of false positives 
+    # tjv 8/26/2017 -- not sure what "path = files[2]" is for except maybe exploration, commenting out for now
+    # path = files[2]  # 4 is a cancer, 2 is not but may have a lots of false positives 
     #path = "../input_shared/stage1_2x2x2/21cfe28c4a891795399bb77d63e939d7.npz"
     count = start_file
     cnt = 0
