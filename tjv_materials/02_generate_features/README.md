@@ -23,6 +23,9 @@
 The items in **bold** are new relative to the previous checkpoint of deep-diving the project (001)
 
 
+Since stage 1 and stage 2 are basically the same thing, I'm only experimenting with stage 1 for now. I might change my mind and decide to start looking into stage 2 data as well as a "hold out" check.
+
+
 * **{PROJECT ROOT}**
 	- py_script (name this whatever)
 		* 001_read_segment_kaggle_data_scans.py - functions were taken from `unet_d8g_222f.py` in original repo
@@ -47,6 +50,7 @@ The items in **bold** are new relative to the previous checkpoint of deep-diving
 		* stage_segmented_2x2x2_crop/   (manually create this dir and leave it empty)
 			- {patient one id}.npz
 			- {patient two id}.npz
+		* **stage1_labels.csv** (download these from Kaggle.com)
 	- **luna/**
 		* **models/**
 			- **d8_2x2x2_best_weights.h5** (pre-trained model weights used to identify/isolate nodules in lungs
