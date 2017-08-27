@@ -956,7 +956,8 @@ def recalc_features_keras_3dx(stage, dim, run, processors, withinsegonly= True, 
         val_uids =    np.load(''.join(("../models/val_uids_16g6_th0999_279_%s%s" % (varstr, stratstr), ".npz")))['arr_0'] 
         val_labels =    np.load(''.join(("../models/val_labels_16g6_th0999_279_%s%s" % (varstr, stratstr), ".npz")))['arr_0'] 
   
-    path = files[6]
+    # tjv 8/27/2017 -- list index out of bounds, not sure why they kept doing this type of thing
+    # path = files[6]
     start_file = 0      # was 508 for a restart
     count = start_file
  
@@ -2065,9 +2066,11 @@ batch_size = 1 # was 36
 
 date_version = "0411x"       # set as per the final submission 
 
+
+
 make_predictions = True  # you may wish to set it False once the nodules have beein identified, as this step is time consuming
 if make_predictions:
-  for stage in ["stage1"]: #, "stage2"]:
+  for stage in ["stage1"]: #, "stage2"]:  # tjv 8/27/2017 -- only want to use stage 1 for now
     start_time = time.time()
     
     ### REDEFINE the nodule identifier to be used if/as needed, as per the ReadMe.txt description  (by commenting out only the relevant option)
@@ -2078,10 +2081,13 @@ if make_predictions:
     
     feats = calc_features_keras_3dx(stage, dim, run, processors, model_weights_name)
     
+    # tjv 8/27/2017 -- why is this going to the dir where the py script is runnning from?
     fname = 'feats_base_8_%s_%s_%s.csv'% (stage, len(feats), date_version)
     print ("OVERALL Process time, predictions & base features: ", stage, fname, time.time()-start_time)
     feats.to_csv(fname, index=True)
     
+
+
 
 # Create 3 features files, starting from the most recent one, and 2 compatible with the March calculations
 stage = "stage1"
