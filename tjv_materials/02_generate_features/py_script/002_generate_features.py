@@ -116,7 +116,13 @@ def dice_coef_loss(y_true, y_pred):
 def unet_model_xd3_2_6l_grid(nb_filter=48, dim=5, clen=3 , img_rows=None, img_cols=None ):
     
     #aiming for architecture as in http://cs231n.stanford.edu/reports2016/317_Report.pdf
-    #The model is eight layers deep, consisting  of  a  series  of  three  CONV-RELU-POOL  lay- ers (with 32, 32, and 64 3x3 filters), a CONV-RELU layer (with 128 3x3 filters), three UPSCALE-CONV-RELU lay- ers (with 64, 32, and 32 3x3 filters), and a final 1x1 CONV- SIGMOID layer to output pixel-level predictions. Its struc- ture resembles Figure 2, though with the number of pixels, filters, and levels as described here
+    # The model is eight layers deep, consisting  of  a  series  of  three  
+    # CONV-RELU-POOL layers (with 32, 32, and 64 3x3 filters), a CONV-RELU 
+    # layer (with 128 3x3 filters), three UPSCALE-CONV-RELU layers 
+    # (with 64, 32, and 32 3x3 filters), and a final 1x1 CONV- SIGMOID layer 
+    # to output pixel-level predictions. Its structure resembles Figure 2, 
+    # though with the number of pixels, filters, and levels as described here
+
 
     ## 3D CNN version of undet_model_xd_6j 
     zconv = clen
@@ -455,7 +461,10 @@ def calc_features_keras_3dx(stage, dim, run, processors, model_weights_name):
         files_in = pd.read_csv("./files_in_222.csv", names=colnames)
         files = files_in.fn.tolist()[1:]
         len(files)
-        path = files[2]  # 4 is a cancer, 2 is not but may have a lots of false positives 
+        
+        # tjv 8/27/2017 -- this will throw index out of range error
+        #path = files[2]  # 4 is a cancer, 2 is not but may have a lots of false positives 
+        
         start_file = 1300 #0 #2        # was 508 for a restart
         last_file = len(files)  #
     else:
@@ -1525,7 +1534,9 @@ def recalc_features_keras_3dx_0313(stage, dim, run, processors, withinsegonly= T
         val_uids =    np.load(''.join(("../models/val_uids_16g6_th0999_279_%s%s" % (varstr, stratstr), ".npz")))['arr_0'] 
         val_labels =    np.load(''.join(("../models/val_labels_16g6_th0999_279_%s%s" % (varstr, stratstr), ".npz")))['arr_0'] 
   
-    path = files[6]
+    
+    # tjv 8/27/2017 -- this throws index out of range with my 2-patient sample
+    # path = files[6]
     start_file = 0      # was 508 for a restart
     count = start_file
  
