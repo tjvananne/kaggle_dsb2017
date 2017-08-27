@@ -46,13 +46,25 @@ print("Done loading modules...")
 # script constants -------------------------------------------------------------------------------------
 
 
+ALT_WORKSTATION = ""  # "_shared"  # could be _shared on one of our clusters (empty on AWS)
+STAGE_DIR_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s/" ])                        # to be used with % stage
+
+
+# tjv 8/27/2017
+# logic for whether this is a run to score against labels or if it is "new data"
+score_against_labels = True
+
+if score_against_labels:
+    LABELS_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s_labels.csv"])                  # to be used with % stage
+
+
+
 RESIZE_SPACING = [2,2,2]
 RESOLUTION_STR = "2x2x2"
 
-ALT_WORKSTATION = ""  # "_shared"  # could be _shared on one of our clusters (empty on AWS)
 
-STAGE_DIR_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s/" ])                        # to be used with % stage
-LABELS_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s_labels.csv"])                  # to be used with % stage
+
+
 #SAMPLE_SUBM_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s_sample_submission.csv"]) # to be used with % stage
 
 smooth = 1.
@@ -73,9 +85,9 @@ PIXEL_MEAN = 0.028  # should be from the entire set (approx value used)
 K.set_image_dim_ordering('th') 
 
 
-
 img_rows = 448      ## global value
 img_cols = 448      ## global value
+
 
 
 
@@ -399,7 +411,14 @@ def hu_describe(data, uid, part=""):
 def calc_features_keras_3dx(stage, dim, run, processors, model_weights_name):
     
     STAGE_DIR = STAGE_DIR_BASE % stage
-    LABELS = LABELS_BASE % stage
+    
+    # tjv 8/27/2017 -- only do this if scoring against labeled dataset
+    if score_against_labels:
+        LABELS = LABELS_BASE % stage
+        ## obtain cancer labels for quick validation
+        labels = pd.read_csv(LABELS) ### was data/
+        #print(labels.head())
+    
     
     start_from_model_weights = True
     if start_from_model_weights:
@@ -419,9 +438,7 @@ def calc_features_keras_3dx(stage, dim, run, processors, model_weights_name):
        print(model.summary())
        print("Loaded model: ", model_name)
        
-    ## obtain cancer labels for quick validation
-    labels = pd.read_csv(LABELS) ### was data/
-    #print(labels.head())
+    
 
 
     source_data_name = ''.join([stage, "_", RESOLUTION_STR ])
@@ -467,10 +484,12 @@ def calc_features_keras_3dx(stage, dim, run, processors, model_weights_name):
         uid =  path[path.rindex('/')+1:] 
         uid = uid[:-4]
 
-        if (uid in labels["id"].tolist()):
-            cancer = int(labels["cancer"][labels["id"] == uid])
-        else:
-            cancer = -777
+        # tjv 8/27/2017 -- only do this if scoring against labeled dataset
+        if score_against_labels:
+            if (uid in labels["id"].tolist()):
+                cancer = int(labels["cancer"][labels["id"] == uid])
+            else:
+                cancer = -777
         
         count += 1
     
@@ -1472,9 +1491,11 @@ def recalc_features_keras_3dx(stage, dim, run, processors, withinsegonly= True, 
 
 def recalc_features_keras_3dx_0313(stage, dim, run, processors, withinsegonly= True, valonly = False):
     STAGE_DIR = STAGE_DIR_BASE % stage
-    LABELS = LABELS_BASE % stage
-
-    labels = pd.read_csv(LABELS) ### was data/
+    
+    # tjv 8/27/2017 -- only do this if scoring against labeled dataset
+    if score_against_labels:
+        LABELS = LABELS_BASE % stage
+        labels = pd.read_csv(LABELS) ### was data/
 
     source_data_name = ''.join([stage, "_", RESOLUTION_STR ])
     source_data_name_seg = ''.join([stage, "_segmented_", RESOLUTION_STR ])
@@ -1519,11 +1540,12 @@ def recalc_features_keras_3dx_0313(stage, dim, run, processors, withinsegonly= T
         uid =  path[path.rindex('/')+1:] 
         uid = uid[:-4]   # cut the .npz suffix
         
-  
-        if (uid in labels["id"].tolist()):
-            cancer = int(labels["cancer"][labels["id"] == uid])  # so we know during testing and also later store it
-        else:
-            cancer = -777
+        # tjv 8/27/2017 -- only do this if scoring against labeled dataset
+        if score_against_labels:
+            if (uid in labels["id"].tolist()):
+                cancer = int(labels["cancer"][labels["id"] == uid])  # so we know during testing and also later store it
+            else:
+                cancer = -777
             
         if uid in limit_to_ids or len(limit_to_ids) == 0:   # either use the limit_to list or use all
             count += 1
