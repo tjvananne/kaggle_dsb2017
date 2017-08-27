@@ -2045,7 +2045,7 @@ date_version = "0411x"       # set as per the final submission
 
 make_predictions = True  # you may wish to set it False once the nodules have beein identified, as this step is time consuming
 if make_predictions:
-  for stage in ["stage1", "stage2"]:
+  for stage in ["stage1"]: #, "stage2"]:
     start_time = time.time()
     
     ### REDEFINE the nodule identifier to be used if/as needed, as per the ReadMe.txt description  (by commenting out only the relevant option)
@@ -2062,7 +2062,7 @@ if make_predictions:
     
 
 # Create 3 features files, starting from the most recent one, and 2 compatible with the March calculations
-stage = "stage2"
+stage = "stage1"
 for stage in ["stage1"]:  # , "stage2"]:   # tjv 8/26/2017 -- only want to use stage 1 for now
     start_time = time.time()
     
