@@ -45,27 +45,27 @@ print("Done loading modules...")
 
 # script constants -------------------------------------------------------------------------------------
 
-
 ALT_WORKSTATION = ""  # "_shared"  # could be _shared on one of our clusters (empty on AWS)
 STAGE_DIR_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s/" ])                        # to be used with % stage
 
 
 # tjv 8/27/2017
 # logic for whether this is a run to score against labels or if it is "new data"
-score_against_labels = True
+# The goal here is to have a flag for whether or not we're wanting to compare the
+# work of this script to a dataset of labeled "answers" data.
+score_against_labels = False  # default is True, going to see if script passes as False
+
 
 if score_against_labels:
     LABELS_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s_labels.csv"])                  # to be used with % stage
-
 
 
 RESIZE_SPACING = [2,2,2]
 RESOLUTION_STR = "2x2x2"
 
 
-
-
 #SAMPLE_SUBM_BASE = ''.join(["../input", ALT_WORKSTATION, "/%s_sample_submission.csv"]) # to be used with % stage
+
 
 smooth = 1.
 
@@ -79,7 +79,6 @@ MAX_BOUND = 400.0
 PIXEL_MEAN = 0.028  # should be from the entire set (approx value used)
 
 
-
 # not sure where this should go; requires research:
 # setting the back-end to tensorflow? theano?
 K.set_image_dim_ordering('th') 
@@ -91,9 +90,8 @@ img_cols = 448      ## global value
 
 
 
+
 # function defs ----------------------------------------------------------------------------------------
-
-
 
 
 
@@ -114,6 +112,10 @@ def dice_coef_loss(y_true, y_pred):
 
 
 def unet_model_xd3_2_6l_grid(nb_filter=48, dim=5, clen=3 , img_rows=None, img_cols=None ):
+    
+    # this is the nodule identifier. This function just sets up the architecture for
+    # the CNN neural net, then we have to load in the pre-trained weights into
+    # this model architecture
     
     #aiming for architecture as in http://cs231n.stanford.edu/reports2016/317_Report.pdf
     # The model is eight layers deep, consisting  of  a  series  of  three  
@@ -499,9 +501,14 @@ def calc_features_keras_3dx(stage, dim, run, processors, model_weights_name):
                 cancer = int(labels["cancer"][labels["id"] == uid])
             else:
                 cancer = -777
+        else:
+            # tjv - trying to fix a variable "cancer" referenced before assignment (QUESTION THIS)
+            cancer = -777
         
         count += 1
     
+        
+        
         
         if count % processors == run:    # do this part in this process, otherwise skip
         #for folder in mask_wrong:
@@ -940,10 +947,13 @@ def cut_out_non_lungs_z (images3, pmasks3, images3_seg, uid, dim):
 def recalc_features_keras_3dx(stage, dim, run, processors, withinsegonly= True, valonly = False):
 
     STAGE_DIR = STAGE_DIR_BASE % stage
-    LABELS = LABELS_BASE % stage
+    
+    # tjv 8/27/2017 -- removing dependency on a labeled dataset
+    if score_against_labels:
+        LABELS = LABELS_BASE % stage
 
-    labels = pd.read_csv(LABELS) ### was data/
-    #print(labels.head())
+        labels = pd.read_csv(LABELS) ### was data/
+        #print(labels.head())
 
 
     source_data_name = ''.join([stage, "_", RESOLUTION_STR ])
@@ -982,11 +992,15 @@ def recalc_features_keras_3dx(stage, dim, run, processors, withinsegonly= True, 
         uid =  path[path.rindex('/')+1:] 
         uid = uid[:-4]   # cut the .npz suffix
         
-  
-        if (uid in labels["id"].tolist()):
-            cancer = int(labels["cancer"][labels["id"] == uid])  # so we know during testing and also later store it
+        # tjv 8/27/2017 -- removing dependency on a labeled dataset
+        if score_against_labels:
+            if (uid in labels["id"].tolist()):
+                cancer = int(labels["cancer"][labels["id"] == uid])  # so we know during testing and also later store it
+            else:
+                cancer = -777
         else:
             cancer = -777
+            
             
         if uid in limit_to_ids or len(limit_to_ids) == 0:   # either use the limit_to list or use all
             count += 1
@@ -1558,6 +1572,9 @@ def recalc_features_keras_3dx_0313(stage, dim, run, processors, withinsegonly= T
                 cancer = int(labels["cancer"][labels["id"] == uid])  # so we know during testing and also later store it
             else:
                 cancer = -777
+        # tjv 8/27/2017 -- attempting to break dependency on labeled data (QUESTION THIS)
+        else:
+            cancer = -777
             
         if uid in limit_to_ids or len(limit_to_ids) == 0:   # either use the limit_to list or use all
             count += 1
